@@ -17,5 +17,9 @@
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "graphql": "^16.9.0",
+    "graphql-request": "^7.1.0"
   }
 }
