@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 console.log("Foundation Backend Challenge");
 
 import { fetchAllTokensData } from './services/dataFetcher';

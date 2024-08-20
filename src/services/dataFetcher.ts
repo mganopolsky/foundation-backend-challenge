@@ -12,35 +12,43 @@ interface TokenHourData {
 }
 
 interface TokenData {
-  name: string;
-  symbol: string;
-  totalSupply: string;
-  volumeUSD: string;
-  decimals: string;
-}
-
-export async function fetchTokenHourData(tokenAddress: string, startTime: number): Promise<TokenHourData[]> {
-  let allData: TokenHourData[] = [];
-  let skip = 0;
-
-  while (true) {
-    const response: { tokenHourDatas: TokenHourData[] } = await graphqlClient.request(GET_TOKEN_HOUR_DATA, {
-      tokenAddress: tokenAddress.toLowerCase(),
-      startTime,
-      skip
-    });
-
-    allData = allData.concat(response.tokenHourDatas);
-
-    if (response.tokenHourDatas.length < 100) {
-      break;
-    }
-
-    skip += 100;
+    name: string;
+    symbol: string;
+    totalSupply: string;
+    volume: string;
+    decimals: string;
   }
 
-  return allData;
-}
+interface TokenDayData {
+    date: string;
+    open: string;
+    high: string;
+    low: string;
+    close: string;
+  }
+
+  export async function fetchTokenHourData(tokenAddress: string, startTime: number): Promise<TokenDayData[]> {
+    let allData: TokenDayData[] = [];
+    let skip = 0;
+  
+    while (true) {
+      const response: { tokenDayDatas: TokenDayData[] } = await graphqlClient.request(GET_TOKEN_HOUR_DATA, {
+        tokenAddress: tokenAddress.toLowerCase(),
+        startTime,
+        skip
+      });
+  
+      allData = allData.concat(response.tokenDayDatas);
+  
+      if (response.tokenDayDatas.length < 100) {
+        break;
+      }
+  
+      skip += 100;
+    }
+  
+    return allData;
+  }
 
 export async function fetchTokenData(tokenAddress: string): Promise<TokenData> {
   const response: { token: TokenData } = await graphqlClient.request(GET_TOKEN_DATA, {
@@ -60,7 +68,7 @@ export async function fetchAllTokensData(): Promise<void> {
     console.log(`Token data:`, tokenData);
 
     const hourData = await fetchTokenHourData(address, sevenDaysAgo);
-    console.log(`Fetched ${hourData.length} hour data points for ${symbol}`);
+    console.log(`Fetched ${hourData.length} day data points for ${symbol}`);
 
     // TODO: Store this data in the database
   }

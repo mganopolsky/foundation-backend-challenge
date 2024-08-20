@@ -1,6 +1,13 @@
-//import { GraphQLClient } from 'graphql-request';
-const { GraphQLClient } = require('graphql-request');
+import { GraphQLClient } from 'graphql-request';
+import dotenv from 'dotenv';
 
-const UNISWAP_V3_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+dotenv.config();
+const API_KEY = process.env.UNISWAP_KEY;
+
+if (!API_KEY) {
+    throw new Error('UNISWAP_KEY is not set in the environment variables');
+}
+
+const UNISWAP_V3_SUBGRAPH_URL = `https://gateway.thegraph.com/api/${API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`;
 
 export const graphqlClient = new GraphQLClient(UNISWAP_V3_SUBGRAPH_URL);

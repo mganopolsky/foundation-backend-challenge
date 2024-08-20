@@ -1,31 +1,30 @@
-const { gql } = require('graphql-request');
+import { gql } from 'graphql-request';
 
 export const GET_TOKEN_HOUR_DATA = gql`
-  query getTokenHourData($tokenAddress: String!, $startTime: Int!, $skip: Int!) {
-    tokenHourDatas(
-      where: { token: $tokenAddress, periodStartUnix_gte: $startTime }
+  query getTokenHourData($tokenAddress: ID!, $startTime: Int!, $skip: Int!) {
+    tokenDayDatas(
+      where: { token: $tokenAddress, date_gte: $startTime }
       first: 100
       skip: $skip
-      orderBy: periodStartUnix
+      orderBy: date
       orderDirection: asc
     ) {
-      periodStartUnix
+      date
       open
-      close
       high
       low
-      priceUSD
+      close
     }
   }
 `;
 
 export const GET_TOKEN_DATA = gql`
-  query getTokenData($tokenAddress: String!) {
+  query getTokenData($tokenAddress: ID!) {
     token(id: $tokenAddress) {
       name
       symbol
       totalSupply
-      volumeUSD
+      volume
       decimals
     }
   }
