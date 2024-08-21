@@ -1,5 +1,5 @@
 import { db } from "./database";
-import { TokenData, TokenDayData, TOKEN_HOUR_DATA_TABLE_NAME, TOKEN_TABLE_NAME } from "../types";
+import { TokenData, TokenHourData, TOKEN_HOUR_DATA_TABLE_NAME, TOKEN_TABLE_NAME } from "../types";
 
 export async function storeTokenData(tokenData: TokenData, address: string) {
     await db.none(`
@@ -14,10 +14,13 @@ export async function storeTokenData(tokenData: TokenData, address: string) {
     `, [address, tokenData.name, tokenData.symbol, tokenData.totalSupply, tokenData.volume, tokenData.decimals]);
   }
   
-  export async function storeTokenHourData(tokenAddress: string, dayData: TokenDayData[]) {
-    const values = dayData.map(d => `('${tokenAddress}', to_timestamp(${d.date}), ${d.open}, ${d.high}, ${d.low}, ${d.close})`).join(',');
-    
-    await db.none(`
+  export async function storeTokenHourData(tokenAddress: string, hourData: TokenHourData[]) {
+    const values = hourData.map(d => {
+      const dateString = d.date.toISOString().slice(0, 19).replace('T', ' ');
+      return `('${tokenAddress}', '${dateString}', ${d.open}, ${d.high}, ${d.low}, ${d.close})`;
+    }).join(',');
+
+    const insert_statement = `
       INSERT INTO ${TOKEN_HOUR_DATA_TABLE_NAME} (token_address, date, open, high, low, close)
       VALUES ${values}
       ON CONFLICT (token_address, date) DO UPDATE SET
@@ -25,5 +28,6 @@ export async function storeTokenData(tokenData: TokenData, address: string) {
         high = EXCLUDED.high,
         low = EXCLUDED.low,
         close = EXCLUDED.close
-    `);
+    `
+    await db.none(insert_statement);
   }

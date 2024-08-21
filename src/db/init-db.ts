@@ -13,12 +13,13 @@ const init_table_query = `
 
     CREATE TABLE IF NOT EXISTS ${TOKEN_HOUR_DATA_TABLE_NAME} (
       id SERIAL PRIMARY KEY,
-      token_address TEXT REFERENCES ${TOKEN_TABLE_NAME}(address),
+      token_address TEXT,
       date TIMESTAMP NOT NULL,
       open NUMERIC NOT NULL,
       high NUMERIC NOT NULL,
       low NUMERIC NOT NULL,
-      close NUMERIC NOT NULL
+      close NUMERIC NOT NULL,
+      UNIQUE (token_address, date)
     );
 `
 const last_timestamp_query = `SELECT MAX(date) AS latest_date
@@ -33,13 +34,15 @@ export async function getLatestPollingTimeStamp() : Promise<Date | null>{
   try {
     const result = await db.query(last_timestamp_query)
 
-    if (result.rows.length > 0 && result.rows[0].latest_date) {
+    if (result != null && result.rows != null &&
+      result.rows.length > 0 && result.rows[0].latest_date != null ) 
+    {
       const latestDate = new Date(result.rows[0].latest_date);
 
       return latestDate; // Data is already loaded, no need to load again      
-    }
+    }    
   } catch (error) {
-    console.error("[ERROR]: Could not get latest timestamp : ", error)
+    console.error("[ERROR]: Could not get latest timestamp : ", (error as Error).message)
   }
   // if no data exists, return null - indicates no history exists
   return null 

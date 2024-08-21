@@ -5,6 +5,7 @@
   "scripts": {
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
+    "test:clean": "rimraf dist && tsc && jest",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts && nodemon src/services/server.ts",
     "build": "tsc",

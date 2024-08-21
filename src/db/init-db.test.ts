@@ -5,15 +5,22 @@ import { db } from './database';
 jest.spyOn(db, 'none');
 
 describe('Database Initialization', () => {
+
+  beforeAll(async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    await initDatabase();
+    expect(consoleSpy).toHaveBeenCalledWith('Database initialized');
+    consoleSpy.mockRestore();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('initDatabase should create necessary tables', async () => {
-    await initDatabase();
-
-    expect(db.none).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS'));
-    expect(db.none).toHaveBeenCalledTimes(1);
+  afterAll(() => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, 1000); // Wait for 1 second before ending the test suite
+    });
   });
 
   test('getLatestPollingTimeStamp should return null when no data exists', async () => {

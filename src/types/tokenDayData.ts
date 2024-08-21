@@ -1,7 +1,7 @@
 export interface TokenDayData {
-    date: string;
-    open: string;
-    high: string;
-    low: string;
-    close: string;
+    date: Date;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
 }
