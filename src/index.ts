@@ -1,16 +1,16 @@
 import dotenv from 'dotenv';
+import { initDatabase } from './db/init-db';
+import { fetchAndStoreTokensData } from './services/historicalTokenService';
+
 dotenv.config();
-
-console.log("Foundation Backend Challenge");
-
-import { fetchAllTokensData } from './services/dataFetcher';
 
 async function main() {
   console.log("Foundation Backend Challenge");
   
   try {
-    await fetchAllTokensData();
-    console.log("Data fetching completed");
+    await initDatabase();
+    await fetchAndStoreTokensData();
+    console.log("Data fetching amd storage completed");
   } catch (error) {
     console.error("Error fetching data:", error);
   }
