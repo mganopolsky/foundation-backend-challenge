@@ -4,6 +4,28 @@
 
 This project is a backend service that fetches and stores token data from the [Uniswap V3 subgraph](https://thegraph.com/explorer/subgraphs/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV?view=Query&chain=arbitrum-one#query-subgraph), and provides an API to retrieve chart data for various tokens. It uses `Node.js`, `Express`, `TypeScript`, and `PostgreSQL`.
 
+This solution is way over-engineered; I wanted to use this as an exercise in creating something that could have a much much more powerful scale. The part of the system that runs the main data load is set up with asynchronous tasks with Promises completing in parallel  - so that if needed, this could really be left to run on a much much larger scale. 
+
+I thought long and hard about the concurrency situation in this project. There's a lot less data then I initially expected and real multi-threading isn't truly needed; However, it's easy to see that running the pagination queries that return potentially hundreds of thousands of records and then needing the save them could cause a lot of concurrency and blocking issues.
+
+To implement actual multithreading for this operation, one could consider:
+
+* Using Node.js Worker Threads: You could create a worker pool to distribute the GraphQL requests across multiple threads.
+* Implementing a queue system: You could use a job queue (like Bull) to distribute work across multiple Node.js processes.
+* Parallel processing: If fetching data for multiple tokens, one could use `Promise.all()` to fetch data for different tokens in parallel. This method is already used in `gqlPoller.ts` class.
+
+While I used `Node.js` and `Express` to write this and there's asynchronous processing going on, it's important to mention that Node is a single-threaded process; However, Node was simple to use and set up for this small proof of concept, so I ended up using that.
+
+`Jest` was used for testing, both unit and integration tests. Instructions for running tests are below. 
+
+### Sections: ###
+
+There are 2 main parts of this repo: 
+1. A graphQL server-based application that will bring in data from Uniswap Subgraph, and save it to the Postgres DB
+2. A REST API endpoint that can produce an aggregate of the data saved in step 1 based on input of a `token` and aggregation time in hours. 
+
+Both sections use asynchronous programming with promises; the REST API will deliver fast results while the dataset is small; when the data gets to be more voluminous, a stored procedure will definitely be more useful to speed up the processing. (see future improvements section). 
+
 ### Configuration ###
 
 * A local version of `Postgres` was installed on my local machine for this purpose. The credentials are stored in the `.env` file; a temple `.env.template` file is enclosed in the repo.
@@ -48,14 +70,24 @@ This project is a backend service that fetches and stores token data from the [U
     UNISWAP_KEY=your_uniswap_api_key
     ```
 
-4. **Initialize the database:**
-    ```bash
-    npm run start
-    ```
+4. **Install the database:**
+   * Install a Postgres instance locally, or connect to an existing one;
+   * a client, like pgAdmin, is useful for testing as well - but unnecessary.
+   * The needed `db name` is set up in the `.env` file; nothing needs to be initialized since the code will take care of creating the needed tables.
+   * This will need to be more thoroughly set up in a real application
 
 ## Usage
 
-### Starting the Server
+## Starting the GraphQL ingesting Server:
+Run the following command to run the historical import:
+```bash
+npm run start:poller
+```
+This will run the initial historical ingestion, and then run *hourly* to ingest new data *hourly* , using the `setTimeout` method.
+
+I decided that hourly would be a decent interval to run the polling on - not too often and not too sparse. This should be re-evaluated as the app gets tested more. 
+
+### Starting the API Server
 
 Run the following command to start the server:
 ```bash
@@ -282,14 +314,9 @@ npm run dev
 
 ## Running Tests ##
 
-To run the test suite with full rebuild:
+For running tests: (will do a complete re-build every time)
  ```bash
-npm run dev
- ```
-
-For debugging tests:
- ```bash
-npm run test:debug
+npm run test:clean
  ```
 
 ### Building the Project ###
@@ -299,7 +326,7 @@ To compile TypeScript to JavaScript:
 npm run build
  ```
 
-Future todo: 
+## Future todo: ##
 
 * Separate out separate services for historical loading & hourly loading
 * Implement graphData API call as a graphQL endpoint
@@ -311,5 +338,13 @@ Future todo:
 * A whole lot more tests - MUCH MORE, but unit and integration tests
 * Optimizing batch writing to db - 100 is probably ok, but any more, using a COPY command might be better. Better yet, an ORM might be really helpful
 * Currently, the tokens processed are hard-coded in the system. It could easily be expanded so that any token can be polled for.
+* Configuration management for dev/stage/prod environments
+* Protection against dependency injection
+* Better logging - perhaps using `Data Dog` or `Winston`
+* Rate Limiting on the API to prevent abuse
+* CI/CD pipeline for automated testing and deployment
+* Add performance monitoring and application metrics collection
+* Better error handling
+* More detailed comments - although I have tried to make the code easy to read
 
   
