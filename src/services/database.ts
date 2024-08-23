@@ -92,6 +92,5 @@ export async function getDBChartData (tokenSymbol: string, timeUnitInHours: numb
     });
   }  
   const groupedData: Array<Array<[string, string, number]>> = Array.from(dataMap.values());
-  // reutrn 
   return groupedData;
 };
