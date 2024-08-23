@@ -78,30 +78,25 @@ Both sections use asynchronous programming with promises; the REST API will deli
 
 ## Usage
 
-## Starting the GraphQL ingesting Server:
+## Starting the GraphQL ingesting Server and API Server
 Run the following command to run the historical import:
 ```bash
-npm run start:poller
+npm run start
 ```
 This will run the initial historical ingestion, and then run *hourly* to ingest new data *hourly* , using the `setTimeout` method.
 
 I decided that hourly would be a decent interval to run the polling on - not too often and not too sparse. This should be re-evaluated as the app gets tested more. 
 
-### Starting the API Server
-
-Run the following command to start the server:
-```bash
-npm run start
-```
+This will also start the API Server once the ingestion is complete;
 
 The server will start on http://localhost:3000.
 
-## API Endpoints ##
+### API Endpoints ###
 
 `GET /getChartData`: Retrieves chart data for a specific token
 
 ### Query parameters: ###
-*	`tokenSymbol`: The symbol of the token (e.g., WBTC, SHIB, GNO)
+* `tokenSymbol`: The symbol of the token (e.g., WBTC, SHIB, GNO)
 * `timeUnitInHours`: The time interval for data aggregation in hours
   
 ### Example: ###
