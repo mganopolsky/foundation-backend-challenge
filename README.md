@@ -20,11 +20,49 @@ While I used `Node.js` and `Express` to write this and there's asynchronous proc
 
 ### Sections: ###
 
-There are 2 main parts of this repo: 
-1. A graphQL server-based application that will bring in data from Uniswap Subgraph, and save it to the Postgres DB
-2. A REST API endpoint that can produce an aggregate of the data saved in step 1 based on input of a `token` and aggregation time in hours. 
+#### There are 2 main parts of this repo: ####
+1. A *graphQL server-based application* that will bring in data from Uniswap Subgraph, and save it to the Postgres DB
+2. A *REST API endpoint* that can produce an aggregate of the data saved in step 1 based on input of a `token` and aggregation time in hours. 
 
 Both sections use asynchronous programming with promises; the REST API will deliver fast results while the dataset is small; when the data gets to be more voluminous, a stored procedure will definitely be more useful to speed up the processing. (see future improvements section). 
+
+#### Database ####
+Data picked up from Uniswap is saved in 2 tables: 
+1. token_hour_data
+2. tokens
+
+Schemas: 
+```SQL 
+CREATE TABLE IF NOT EXISTS public.tokens
+(
+    address text COLLATE pg_catalog."default" NOT NULL,
+    name text COLLATE pg_catalog."default" NOT NULL,
+    symbol text COLLATE pg_catalog."default" NOT NULL,
+    total_supply numeric NOT NULL,
+    volume_usd numeric NOT NULL,
+    decimals integer NOT NULL,
+    CONSTRAINT tokens_pkey PRIMARY KEY (address)
+)
+```
+
+```SQL 
+CREATE TABLE IF NOT EXISTS public.token_hour_data
+(
+    id integer NOT NULL DEFAULT nextval('token_hour_data_id_seq'::regclass),
+    token_address text COLLATE pg_catalog."default",
+    date timestamp without time zone NOT NULL,
+    open numeric NOT NULL,
+    high numeric NOT NULL,
+    low numeric NOT NULL,
+    close numeric NOT NULL,
+    price_usd numeric NOT NULL,
+    CONSTRAINT token_hour_data_pkey PRIMARY KEY (id),
+    CONSTRAINT token_hour_data_token_address_date_key UNIQUE (token_address, date)
+)
+```
+The `token_hour_data` maps to the `tokens` on the `token_hour_data.token_address => tokens.address` fields
+
+The final aggregation that produces the results for the API call queries these tables and aggregates the data appropriately.
 
 ### Configuration ###
 
