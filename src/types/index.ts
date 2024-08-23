@@ -1,6 +1,5 @@
 export * from './chartData';
 export * from './tokenData';
-export * from './tokenDayData';
 export * from './tokenHourData';
 
 export const TOKEN_TABLE_NAME = 'tokens'
