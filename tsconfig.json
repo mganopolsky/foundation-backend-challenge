@@ -13,7 +13,7 @@
     "sourceMap": true     
   },
   "include": [
-    "src/**/*.ts"                             // Include all .ts files in the 'src' directory
+    "src/**/*"                             // Include all .ts files in the 'src' directory
   ],
   "exclude": [
     "node_modules",                           // Exclude 'node_modules' from compilation

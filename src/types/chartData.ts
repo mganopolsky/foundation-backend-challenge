@@ -1,7 +1,5 @@
 export interface ChartData {
-    time: string;
-    type: 'open' | 'close' | 'high' | 'low' | 'priceUSD';
+    date: string;
+    type: string;    
     value: number;
 }
-
-export const chartDataTypes = ['open', 'close', 'high', 'low', 'priceUSD'];

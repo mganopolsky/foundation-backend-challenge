@@ -19,6 +19,7 @@ const init_table_query = `
       high NUMERIC NOT NULL,
       low NUMERIC NOT NULL,
       close NUMERIC NOT NULL,
+      price_usd NUMERIC NOT NULL,
       UNIQUE (token_address, date)
     );
 `

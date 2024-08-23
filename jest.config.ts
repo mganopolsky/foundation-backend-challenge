@@ -4,4 +4,6 @@ module.exports = {
   transform: {
     "^.+\\.tsx?$": ["ts-jest", {}], // Use this format for ts-jest
   },
+  testMatch: ['**/src/**/*.test.ts'],
+  verbose: true
 };

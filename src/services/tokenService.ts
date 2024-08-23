@@ -1,19 +1,20 @@
-import { SEVEN_DAYS_OF_DATA_BY_THE_SECOND } from "../config/constants";
+import { SEVEN_DAYS_OF_DATA_BY_THE_SECOND, MILLISECONDS } from "../config/constants";
 import { TOKENS } from "../config/tokens";
 import { storeTokenData, storeTokenHourData } from "../db/save";
-import { fetchTokenData, fetchTokenHourData } from "./gql";
+import { fetchTokenData, fetchTokenHourData } from "./gqlFetcher";
 
-export async function fetchAndStoreTokensData(symbol: string, address:string): Promise<void> {
-  
-    for (const [symbol, address] of Object.entries(TOKENS)) {
-      console.log(`Fetching data for ${symbol}...`);
-      
-      const tokenData = await fetchTokenData(address);
-      console.log(`Token data:`, tokenData);
-      await storeTokenData(tokenData, address);
-  
-      const dayData = await fetchTokenHourData(address, SEVEN_DAYS_OF_DATA_BY_THE_SECOND);
-      console.log(`Fetched ${dayData.length} day data points for ${symbol}`);
-      await storeTokenHourData(address, dayData);
-    }
+export async function fetchAndStoreTokensData(timeSince: number, timeTill: number): Promise<void> {
+  for (const [symbol, address] of Object.entries(TOKENS)) {
+    console.log(`Fetching data for ${symbol}...`);
+    
+    //existing tokenData will be overwritten
+    const tokenData = await fetchTokenData(address);
+    console.log(`Token data:`, tokenData);
+    await storeTokenData(tokenData, address);
+
+    // now load the latest tokenHourData
+    const hourlyData = await fetchTokenHourData(address, timeSince, timeTill);
+    console.log(`Fetched ${hourlyData.length} day data points for ${symbol}`);
+    await storeTokenHourData(address, hourlyData);
   }
+}

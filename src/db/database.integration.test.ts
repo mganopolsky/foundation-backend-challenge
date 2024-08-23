@@ -18,6 +18,7 @@ const TEST_TOKEN_DATA = {
 };
 
 const TEST_TOKEN_HOUR_DATA: TokenHourData = {
+  tokenAddress: TEST_TOKEN_ADDRESS,
   date: new Date(),
   open: 10,
   close: 15,

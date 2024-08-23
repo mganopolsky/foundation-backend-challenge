@@ -17,17 +17,18 @@ export async function storeTokenData(tokenData: TokenData, address: string) {
   export async function storeTokenHourData(tokenAddress: string, hourData: TokenHourData[]) {
     const values = hourData.map(d => {
       const dateString = d.date.toISOString().slice(0, 19).replace('T', ' ');
-      return `('${tokenAddress}', '${dateString}', ${d.open}, ${d.high}, ${d.low}, ${d.close})`;
+      return `('${tokenAddress}', '${dateString}', ${d.open}, ${d.high}, ${d.low}, ${d.close}, ${d.priceUSD})`;
     }).join(',');
 
     const insert_statement = `
-      INSERT INTO ${TOKEN_HOUR_DATA_TABLE_NAME} (token_address, date, open, high, low, close)
+      INSERT INTO ${TOKEN_HOUR_DATA_TABLE_NAME} (token_address, date, open, high, low, close, price_usd)
       VALUES ${values}
       ON CONFLICT (token_address, date) DO UPDATE SET
         open = EXCLUDED.open,
         high = EXCLUDED.high,
         low = EXCLUDED.low,
-        close = EXCLUDED.close
+        close = EXCLUDED.close,
+        price_usd = EXCLUDED.price_usd;
     `
     await db.none(insert_statement);
   }
