@@ -1,5 +1,5 @@
 import { getLatestPollingTimeStamp, initDatabase } from '../db/init-db';
-import { DAYS_TO_GET_DATA, MILLISECONDS, MILLISECONDS_IN_AN_HOUR } from '../config/constants';
+import { DAYS_TO_GET_DATA, MILLISECONDS, MILLISECONDS_IN_AN_HOUR, SECONDS_IN_AN_HOUR } from '../config/constants';
 import { fetchAndStoreTokensData } from './tokenService';
 
 /**
@@ -64,10 +64,10 @@ async function loadHistoricalData(): Promise<void> {
 async function startPollingService() {
     async function pollData() {
         // Get current timestamp
-        const now = Math.floor(Date.now() / 1000);
+        const now = Math.floor(Date.now() / MILLISECONDS);
         // Define polling interval
         const endTime = now;
-        const startTime = endTime - 3600; // 3600 seconds = 1 hour
+        const startTime = endTime - SECONDS_IN_AN_HOUR; // 3600 seconds = 1 hour
 
         try {
             console.info(`Polling: Fetching data from ${startTime} to ${endTime}`);
