@@ -67,7 +67,6 @@ jest.mock('../graphql/client', () => ({
     it('should fetch all pages of data until less than 100 records are returned', async () => {
       await fetchTokenHourData(tokenAddress, startTime, endTime);
   
-      expect(graphqlClient.request).toHaveBeenCalledTimes(1);
-      // Additional expectations based on your actual pagination logic
+      expect(graphqlClient.request).toHaveBeenCalledTimes(1);      
     });
   });
