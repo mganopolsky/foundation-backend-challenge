@@ -10,7 +10,7 @@ describe('fetchTokenHourData E2E from yesterdays 12pm-4pm time span', () => {
     const startTime = Math.floor(yesterday.getTime() / 1000); // Convert to Unix timestamp
 
     const endTimeDate = new Date(yesterday);
-    endTimeDate.setHours(16, 0, 0, 0); // Set time to 1:00 PM
+    endTimeDate.setHours(16, 0, 0, 0); // Set time to 4:00 PM
     const endTime = Math.floor(endTimeDate.getTime() / 1000); // Convert to Unix timestamp
 
 
