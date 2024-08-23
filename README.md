@@ -111,7 +111,7 @@ The final aggregation that produces the results for the API call queries these t
 4. **Install the database:**
    * Install a Postgres instance locally, or connect to an existing one;
    * a client, like pgAdmin, is useful for testing as well - but unnecessary.
-   * The needed `db name` is set up in the `.env` file; nothing needs to be initialized since the code will take care of creating the needed tables.
+   * Nothing needs to be initialized since the code will take care of creating the needed tables.
    * This will need to be more thoroughly set up in a real application
 
 ## Usage
