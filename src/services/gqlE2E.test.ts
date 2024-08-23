@@ -30,5 +30,5 @@ describe('fetchTokenHourData E2E from yesterdays 12pm-4pm time span', () => {
         expect(entry).toHaveProperty('priceUSD');
         expect(entry).toHaveProperty('tokenAddress', tokenAddress.toLowerCase());
         });
-    }, 500000000);
+    });
 });
