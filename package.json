@@ -6,8 +6,8 @@
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:clean": "rimraf dist && tsc && jest",
-    "start": "ts-node src/services/chartsServer.ts",
-    "start:poller": "ts-node src/services/gqlPoller.ts",
+    "start": "tsc && ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
     "build": "tsc",
     "clean": "rimraf dist"
   },
